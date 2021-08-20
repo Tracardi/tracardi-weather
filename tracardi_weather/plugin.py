@@ -66,7 +66,7 @@ def register() -> Plugin:
             className='WeatherAction',
             inputs=["city"],
             outputs=['weather'],
-            version='0.1.2',
+            version='0.1.3',
             license="MIT",
             author="Risto Kowaczewski",
             init={
