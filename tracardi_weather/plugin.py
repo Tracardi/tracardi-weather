@@ -26,18 +26,15 @@ class WeatherAction(ActionRunner):
         self.client = None
 
     async def run(self, city):
-        print(city)
         if 'city' not in city:
             raise ValueError("Please define city.")
 
         city = city['city']
-        print(city)
         if not isinstance(city, str):
             raise ValueError("Please define city as string.")
 
         dot = DotAccessor(self.profile, self.session, None, self.event, self.flow)
         city = dot[city]
-        print(city)
         result = WeatherResult()
 
         if self.config.system.lower() == 'metric':
@@ -66,7 +63,7 @@ def register() -> Plugin:
             className='WeatherAction',
             inputs=["city"],
             outputs=['weather'],
-            version='0.1.3',
+            version='0.1.4',
             license="MIT",
             author="Risto Kowaczewski",
             init={
