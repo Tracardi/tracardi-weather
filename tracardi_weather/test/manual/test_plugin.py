@@ -5,24 +5,34 @@ from tracardi_weather.plugin import WeatherAction
 
 
 async def main():
-    plugin = WeatherAction(**{
-        "system": "metric"
-    })
 
-    plugin.profile = Profile(
-        id="1"
-    )
-    plugin.profile.traits.public['city'] = "Paris"
-
-    result = await plugin.run(**{
+    init = {
+        "system": "metric",
         "city": "Wrocław"
-    })
+    }
+
+    payload = {}
+
+    plugin = WeatherAction(**init)
+    result = await plugin.run(payload)
 
     print(result)
 
-    result = await plugin.run(**{
+    # ------------------------------
+
+    init = {
+        "system": "metric",
         "city": "profile@traits.public.city"
-    })
+    }
+
+    payload = {}
+
+    plugin = WeatherAction(**init)
+
+    plugin.profile = Profile(id="1")
+    plugin.profile.traits.public['city'] = "Paris"
+
+    result = await plugin.run(payload)
 
     print(result)
 

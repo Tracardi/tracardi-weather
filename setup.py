@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name='tracardi-weather',
-    version='0.1.4',
+    version='0.1.5',
     description='The purpose of this plugin is to connect to weather server and retrieve weather data in given city.',
     long_description=long_description,
     long_description_content_type="text/markdown",

@@ -9,6 +9,7 @@ from tracardi_weather.service.weather_client import AsyncWeatherClient
 
 class PluginConfiguration(BaseModel):
     system: str = "metric"
+    city: str
 
 
 class WeatherResult(BaseModel):
@@ -22,26 +23,20 @@ class WeatherAction(ActionRunner):
 
     def __init__(self, **kwargs):
         self.config = PluginConfiguration(**kwargs)
-
-        self.client = None
-
-    async def run(self, city):
-        if 'city' not in city:
-            raise ValueError("Please define city.")
-
-        city = city['city']
-        if not isinstance(city, str):
-            raise ValueError("Please define city as string.")
-
-        dot = DotAccessor(self.profile, self.session, None, self.event, self.flow)
-        city = dot[city]
-        result = WeatherResult()
-
         if self.config.system.lower() == 'metric':
             system = "C"
         else:
             system = "F"
         self.client = AsyncWeatherClient(system)
+
+    async def run(self, payload):
+
+        city = self.config.city
+
+        dot = DotAccessor(self.profile, self.session, None, self.event, self.flow)
+        city = dot[city]
+        result = WeatherResult()
+
         weather = await self.client.fetch(city)
 
         result.temperature = weather.current.temperature
@@ -51,9 +46,6 @@ class WeatherAction(ActionRunner):
 
         return Result(port="weather", value=result.dict())
 
-    async def close(self):
-        await self.client.close()
-
 
 def register() -> Plugin:
     return Plugin(
@@ -61,13 +53,14 @@ def register() -> Plugin:
         spec=Spec(
             module='tracardi_weather.plugin',
             className='WeatherAction',
-            inputs=["city"],
+            inputs=["payload"],
             outputs=['weather'],
-            version='0.1.4',
+            version='0.1.5',
             license="MIT",
             author="Risto Kowaczewski",
             init={
-                "system": "METRIC"
+                "system": "METRIC",
+                "city": None
             }
         ),
         metadata=MetaData(
