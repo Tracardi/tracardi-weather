@@ -1,5 +1,3 @@
-import asyncio
-from tracardi.domain.profile import Profile
 from tracardi_plugin_sdk.service.plugin_runner import run_plugin
 from tracardi_weather.plugin import WeatherAction
 
@@ -13,7 +11,10 @@ def test_weather_plugin_plain_text():
     payload = {}
     result = run_plugin(WeatherAction, init, payload)
 
-    print(result)
+    assert 'temperature' in result.output.value
+    assert 'humidity' in result.output.value
+    assert 'wind_speed' in result.output.value
+    assert 'description' in result.output.value
 
 
 def test_weather_plugin_path():
@@ -26,6 +27,7 @@ def test_weather_plugin_path():
 
     result = run_plugin(WeatherAction, init, payload)
 
-    print(result)
-
-
+    assert 'temperature' in result.output.value
+    assert 'humidity' in result.output.value
+    assert 'wind_speed' in result.output.value
+    assert 'description' in result.output.value
