@@ -4,7 +4,7 @@ from tracardi_weather.plugin import WeatherAction
 
 def test_weather_plugin_plain_text():
     init = {
-        "system": "metric",
+        "system": "C",
         "city": "Wrocław"
     }
 
@@ -19,7 +19,7 @@ def test_weather_plugin_plain_text():
 
 def test_weather_plugin_path():
     init = {
-        "system": "metric",
+        "system": "F",
         "city": "payload@city"
     }
 
