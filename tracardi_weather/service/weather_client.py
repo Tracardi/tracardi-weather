@@ -1,9 +1,8 @@
 import python_weather
 from python_weather.response import Weather
-from tracardi.service.singleton import Singleton
 
 
-class AsyncWeatherClient(metaclass=Singleton):
+class AsyncWeatherClient:
 
     METRIC = "C"
     IMPERIAL = "F"

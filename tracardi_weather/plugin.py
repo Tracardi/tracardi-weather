@@ -1,39 +1,25 @@
-from pydantic import BaseModel
-from tracardi_dot_notation.dot_accessor import DotAccessor
 from tracardi_plugin_sdk.action_runner import ActionRunner
-from tracardi_plugin_sdk.domain.register import Plugin, Spec, MetaData
+from tracardi_plugin_sdk.domain.register import Plugin, Spec, MetaData, FormGroup, Form, FormField, FormComponent
 from tracardi_plugin_sdk.domain.result import Result
-
+from tracardi_weather.model.configuration import PluginConfiguration, WeatherResult
 from tracardi_weather.service.weather_client import AsyncWeatherClient
 
 
-class PluginConfiguration(BaseModel):
-    system: str = "metric"
-    city: str
-
-
-class WeatherResult(BaseModel):
-    temperature: float = None
-    humidity: float = None
-    wind_speed: float = None
-    description: str = None
+def validate(config: dict) -> PluginConfiguration:
+    return PluginConfiguration(**config)
 
 
 class WeatherAction(ActionRunner):
 
     def __init__(self, **kwargs):
-        self.config = PluginConfiguration(**kwargs)
-        if self.config.system.lower() == 'metric':
-            system = "C"
-        else:
-            system = "F"
-        self.client = AsyncWeatherClient(system)
+        self.config = validate(kwargs)
+        self.client = AsyncWeatherClient(self.config.system.upper())
 
     async def run(self, payload):
 
         city = self.config.city
 
-        dot = DotAccessor(self.profile, self.session, None, self.event, self.flow)
+        dot = self._get_dot_accessor(payload)
         city = dot[city]
         result = WeatherResult()
 
@@ -55,13 +41,38 @@ def register() -> Plugin:
             className='WeatherAction',
             inputs=["payload"],
             outputs=['weather'],
-            version='0.1.5',
+            version='0.6.0',
             license="MIT",
             author="Risto Kowaczewski",
+            manual="weather_action",
             init={
-                "system": "METRIC",
+                "system": "C",
                 "city": None
-            }
+            },
+            form=Form(groups=[
+                FormGroup(
+                    name="Weather configuration",
+                    fields=[
+                        FormField(
+                            id="system",
+                            name="Metric system",
+                            description="Select metric system.",
+                            component=FormComponent(type="select", props={
+                                "label": "Metric system",
+                                "items": {
+                                    "C": "Celsius",
+                                    "F": "Fahrenheit"
+                                }
+                            })
+                        ),
+                        FormField(
+                            id="city",
+                            name="City",
+                            description="Type city or path to city data.",
+                            component=FormComponent(type="dotPath", props={})
+                        )
+                    ])
+            ]),
         ),
         metadata=MetaData(
             name='Weather service',
