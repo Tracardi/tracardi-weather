@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name='tracardi-weather',
-    version='0.6.1',
+    version='0.6.0.1',
     description='This plugin connects to weather server and retrieve weather data in given city.',
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -13,7 +13,7 @@ setup(
     author_email='risto.kowaczewski@gmail.com',
     packages=['tracardi_weather'],
     install_requires=[
-        'tracardi_plugin_sdk>=0.6.22',
+        'tracardi_plugin_sdk>=0.6.30',
         'pydantic',
         'python_weather'
     ],
